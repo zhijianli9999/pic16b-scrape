@@ -33,11 +33,14 @@ class ImdbSpider(scrapy.Spider):
         of the form {"actor" : actor_name, "movie_or_TV_name" :
         movie_or_TV_name}.
         """
+        # select name of actor
         n = response.css("div.article.name-overview span.itemprop::text").get()
-        if n is None:
-            n = response.url
+        # all_films includes all films credited as actor or other roles
         all_films = response.css("div.filmo-row")
+        # filter only those credited as actor
         films = [f.css('b a::text').get()
                  for f in all_films if f.attrib['id'].split('-')[0] == 'actor']
         for film in films:
             yield {"actor": n, "movie_or_TV_name": film}
+
+# scrapy crawl imdb_spider -o results.csv
